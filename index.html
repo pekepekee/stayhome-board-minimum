@@ -10,6 +10,10 @@
     <script type="text/babel">
       const Board = () => {
         const [pos, setPos] = React.useState({ x: 0, y: 0 });
+
+        const [text, setText] = React.useState("Wash your hands clean!");
+        const [editMode, setEditMode] = React.useState(false);
+
         return (
           <div
             style={{ width: "1000px", height: "1000px", position: "relative" }}
@@ -17,7 +21,15 @@
             onDragOver={(e) => e.preventDefault()} // enable onDrop event
           >
             <div style={{ position: "absolute", top: pos.y + "px", left: pos.x + "px" }} draggable={true}>
-              Wash your hands clean!
+              {editMode ? (
+                <textarea
+                  onBlur={(e) => setEditMode(false)}
+                  onChange={(e) => setText(e.target.value)}
+                  defaultValue={text}
+                />
+              ) : (
+                <div onClick={(e) => setEditMode(true)}>{text}</div>
+              )}
             </div>
           </div>
         );

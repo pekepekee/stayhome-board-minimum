@@ -15,14 +15,17 @@
         });
         const update = (key, card) => setCards({ ...cards, [key]: card });
 
-        const [pos, setPos] = React.useState({ x: 0, y: 0 });
+        const [dragging, setDragging] = React.useState({ key: "", x: 0, y: 0 });
 
         const [editMode, setEditMode] = React.useState({ key: "" });
 
         return (
           <div
             style={{ width: "1000px", height: "1000px", position: "relative" }}
-            onDrop={(e) => setPos({ x: e.clientX, y: e.clientY })}
+            onDrop={(e) => {
+              if (!dragging || !cards) return;
+              update(dragging.key, { ...cards[dragging.key], x: e.clientX - dragging.x, y: e.clientY - dragging.y });
+            }}
             onDragOver={(e) => e.preventDefault()} // enable onDrop event
           >
             {Object.keys(cards).map((key) => (
@@ -30,6 +33,7 @@
                 key={key}
                 style={{ position: "absolute", top: cards[key].y + "px", left: cards[key].x + "px" }}
                 draggable={true}
+                onDragStart={(e) => setDragging({ key, x: e.clientX - cards[key].x, y: e.clientY - cards[key].y })}
               >
                 {editMode.key === key ? (
                   <textarea

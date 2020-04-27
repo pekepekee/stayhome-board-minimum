@@ -25,17 +25,23 @@
       let db = null;
 
       const Board = () => {
+        React.useEffect(() => {
+          db = firebaseDb.ref("/room_url");
+          db.on("value", (value) => setCards(value.val()));
+        }, []);
+
         const [cards, setCards] = React.useState(null);
-        const add = () =>
-          setCards({
-            ...cards,
-            [Math.random().toString(36).slice(-8)]: {
+        const add = () => {
+          const newPostKey = db.push().key;
+          db.update({
+            [newPostKey]: {
               t: "wash",
               x: Math.floor(Math.random() * (200 - 80) + 80),
               y: Math.floor(Math.random() * (200 - 80) + 80),
             },
           });
-        const update = (key, card) => setCards({ ...cards, [key]: card });
+        };
+        const update = (key, card) => db.update({ [key]: card });
 
         const [dragging, setDragging] = React.useState({ key: "", x: 0, y: 0 });
 

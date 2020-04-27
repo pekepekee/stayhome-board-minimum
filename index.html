@@ -4,10 +4,26 @@
     <meta charset="utf-8" />
     <title>StayHomeBoard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
     <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
     <script type="text/babel">
+      var firebaseConfig = {
+        apiKey: "",
+        authDomain: "",
+        databaseURL: "",
+        projectId: "",
+        storageBucket: "",
+        messagingSenderId: "",
+        appId: "",
+        measurementId: "",
+      };
+      const firebaseApp = firebase.initializeApp(firebaseConfig);
+      const firebaseDb = firebaseApp.database();
+      let db = null;
+
       const Board = () => {
         const [cards, setCards] = React.useState(null);
         const add = () =>

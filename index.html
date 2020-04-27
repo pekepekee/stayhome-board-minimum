@@ -26,7 +26,13 @@
 
       const Board = () => {
         React.useEffect(() => {
-          db = firebaseDb.ref("/room_url");
+          const params = new URL(document.location).searchParams;
+          let roomName = params.get("room_name");
+          if (!roomName) {
+            let roomName = window.prompt("please input room's name");
+            window.location.href = window.location.href + "?room_name=" + roomName;
+          }
+          db = firebaseDb.ref(roomName);
           db.on("value", (value) => setCards(value.val()));
         }, []);
 

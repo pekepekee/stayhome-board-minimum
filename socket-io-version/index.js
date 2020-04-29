@@ -9,15 +9,17 @@ app.get("/", (req, res) => {
 
 io.on("connection", (socket) => {
   var socketId = socket.id;
+  var roomId = socket.handshake.query.id;
+  socket.join(roomId);
   try {
-    var data = fs.readFileSync(`data/data.json`, "utf-8");
+    var data = fs.readFileSync(`data/${roomId}.json`, "utf-8");
     io.to(socketId).emit("server_item_update", JSON.parse(data));
   } catch (e) {
     console.log(e);
   }
   socket.on("client_item_update", (data) => {
-    socket.broadcast.emit("server_item_update", data);
-    fs.writeFile(`data/data.json`, JSON.stringify(data), (err) => {
+    socket.broadcast.to(roomId).emit("server_item_update", data);
+    fs.writeFile(`data/${roomId}.json`, JSON.stringify(data), (err) => {
       if (err) throw err;
     });
   });

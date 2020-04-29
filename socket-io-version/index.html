@@ -19,7 +19,7 @@
             let roomName = window.prompt("please input room's name");
             window.location.href = window.location.href + "?room_name=" + roomName;
           }
-          socket = io();
+          socket = io("localhost:3000", { query: { id: roomName } });
           socket.on("server_item_update", (msg) => setCards(msg));
         }, []);
 

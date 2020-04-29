@@ -80,5 +80,5 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
-
-
+socket-io-version/data/*
+!.gitkeep

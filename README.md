@@ -22,3 +22,8 @@ var firebaseConfig = {
   measurementId: "",
 };
 ```
+
+### other version
+
+if you don't want to use firebase.
+please check [socker-io-version](./socker-io-version).

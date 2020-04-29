@@ -4,25 +4,12 @@
     <meta charset="utf-8" />
     <title>StayHomeBoard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
     <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script type="text/babel">
-      var firebaseConfig = {
-        apiKey: "",
-        authDomain: "",
-        databaseURL: "",
-        projectId: "",
-        storageBucket: "",
-        messagingSenderId: "",
-        appId: "",
-        measurementId: "",
-      };
-      const firebaseApp = firebase.initializeApp(firebaseConfig);
-      const firebaseDb = firebaseApp.database();
-      let db = null;
+      var socket = null;
 
       const Board = () => {
         React.useEffect(() => {
@@ -32,23 +19,33 @@
             let roomName = window.prompt("please input room's name");
             window.location.href = window.location.href + "?room_name=" + roomName;
           }
-          db = firebaseDb.ref(roomName);
-          db.on("value", (value) => setCards(value.val()));
+          socket = io("localhost:3000", { query: { id: roomName } });
+          socket.on("server_item_update", (msg) => setCards(msg));
         }, []);
 
         const [cards, setCards] = React.useState(null);
         const add = () => {
-          const newPostKey = db.push().key;
-          db.update({
-            [newPostKey]: {
+          const newCards = {
+            ...cards,
+            [Math.random().toString(36).slice(-8)]: {
               t: "wash",
               x: Math.floor(Math.random() * (200 - 80) + 80),
               y: Math.floor(Math.random() * (200 - 80) + 80),
             },
-          });
+          };
+          setCards(newCards);
+          socket.emit("client_item_update", newCards);
         };
-        const update = (key, card) => db.update({ [key]: card });
-        const remove = (key) => db.child(key).remove();
+        const update = (key, card) => {
+          const newCards = { ...cards, [key]: card };
+          setCards(newCards);
+          socket.emit("client_item_update", newCards);
+        };
+        const remove = (key) => {
+          delete cards[key];
+          setCards(cards);
+          socket.emit("client_item_update", cards);
+        };
 
         const [dragging, setDragging] = React.useState({ key: "", x: 0, y: 0 });
 
